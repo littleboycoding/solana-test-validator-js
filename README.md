@@ -42,7 +42,7 @@ describe("Test", function () {
   this.timeout(60000);
 
   before(async function () {
-    [connection, payer, cleanup] = startSolanaTestValidator();
+    [connection, [payer], cleanup] = startSolanaTestValidator();
   });
 
   after(function () {
@@ -65,7 +65,7 @@ describe("Test", function () {
   this.timeout(60000);
 
   before(async function () {
-    [connection, payer, cleanup] = startSolanaTestValidator([
+    [connection, [payer], cleanup] = startSolanaTestValidator([
       "--bpf-program",
       PROGRAM_ADDRESS,
       "<path-to-program.so>",
