@@ -7,7 +7,13 @@ import {
 } from "@solana/web3.js";
 import cp from "child_process";
 import { Client as rpcWebSocketClient } from "rpc-websockets";
-import { waitUntilRpcAvailable, stringify, logger, wait } from "./utils";
+import {
+  waitUntilRpcAvailable,
+  stringify,
+  logger,
+  wait,
+  validateRpc,
+} from "./utils";
 
 export interface Option {
   logging?: boolean;
@@ -66,12 +72,22 @@ async function startSolanaTestValidator(
   const portIndex = stringifyArgs?.findIndex((a) => a === "--rpc-port");
   const port = portIndex === -1 ? "8899" : stringifyArgs[portIndex + 1];
 
+  // retry attempt limit
+  let retry = 5;
+
+  while (await validateRpc(port)) {
+    if (retry <= 0) throw new Error("port " + port + " already in use");
+    retry -= 1;
+    await wait(1000);
+  }
+
   // enforce --reset argument
   if (!stringifyArgs.find((s) => s === "--reset"))
     stringifyArgs.push("--reset");
 
+  // wait for previos instance to fully close
+  await wait(3000);
   // spawn process
-  await wait(1000);
   const process = cp.spawn(option?.exec || DEFAULT_OPTION.exec, stringifyArgs);
   // optionally logger process
   let loggerProcess: cp.ChildProcessWithoutNullStreams;
