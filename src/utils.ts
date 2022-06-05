@@ -54,7 +54,7 @@ function logger(message: string) {
 
   const name = chalk.bold(solana + test + validator);
 
-  console.log(name, chalk.red.bold("\n>"), message);
+  console.log(name, chalk.red.bold("\n❯"), message);
 }
 
 export { stringify, wait, waitUntilRpcAvailable, validateRpc, logger };

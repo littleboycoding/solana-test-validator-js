@@ -1,6 +1,6 @@
 # solana-test-validator-js
 
-Spin-up solana-test-validator instance in JavaScript, intended to be use with framework.
+Spin-up solana-test-validator instance in JavaScript, intended to be use with test framework.
 
 It also create connection instance and funded account ready to be use in test !
 
