@@ -4,7 +4,7 @@
   "description": "Spin-up solana-test-validator instance in JavaScript",
   "main": "dist/index.js",
   "scripts": {
-    "test": "mocha test/*.ts",
+    "test": "mocha test/*.test.ts",
     "build": "tsc",
     "prepare": "npm run build"
   },
