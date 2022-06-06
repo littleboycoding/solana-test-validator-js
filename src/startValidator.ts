@@ -14,6 +14,7 @@ import {
   wait,
   validateRpc,
 } from "./utils";
+import { Cleanup, setStates } from "./states";
 
 export interface Option {
   logging?: boolean;
@@ -37,8 +38,6 @@ export interface Account {
 }
 
 export type Args = PublicKey | string;
-
-export type Cleanup = () => Promise<void>;
 
 const DEFAULT_OPTION = {
   exec: "solana-test-validator",
@@ -140,7 +139,7 @@ async function startSolanaTestValidator(
 
   await Promise.all(airdropPromises);
 
-  const close: Cleanup = async () => {
+  const cleanup: Cleanup = async () => {
     const ws = (<any>connection)._rpcWebSocket as rpcWebSocketClient;
     ws.close();
     // prevent error logging
@@ -149,7 +148,14 @@ async function startSolanaTestValidator(
     loggerProcess?.kill();
   };
 
-  return [connection, accounts, close];
+  // setting states
+  setStates({
+    connection,
+    accounts,
+    cleanup,
+  });
+
+  return [connection, accounts, cleanup];
 }
 
 export { startSolanaTestValidator };

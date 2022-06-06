@@ -1,32 +1,36 @@
-import { Connection, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { Cleanup, startSolanaTestValidator } from "../src/index";
+import { Connection, Keypair } from "@solana/web3.js";
+import { Cleanup, startSolanaTestValidator, states } from "../src/index";
 import { assert } from "chai";
 
 describe("startSolanaTestValidator", function () {
   let connection: Connection;
   let accounts: Keypair[];
-  let cleanUp: Cleanup;
+  let cleanup: Cleanup;
 
   before(async function () {
     this.timeout(30000);
-    [connection, accounts, cleanUp] = await startSolanaTestValidator([], {
+    [connection, accounts, cleanup] = await startSolanaTestValidator([], {
       logging: true,
-      accounts: {
-        number: 2,
-        lamports: LAMPORTS_PER_SOL * 10000,
-      },
     });
   });
 
   after(function () {
-    cleanUp();
+    cleanup();
   });
 
-  it("should return expected value", function () {
-    assert.isArray(accounts);
-    assert.isFunction(cleanUp);
+  it("should setup successfully", function () {
+    const glboalStates = states();
+
+    // Assert local state
     assert.instanceOf(connection, Connection);
+    assert.isArray(accounts);
     assert.instanceOf(accounts[0], Keypair);
-    assert.instanceOf(accounts[1], Keypair);
+    assert.isFunction(cleanup);
+
+    // Assert global state
+    assert.instanceOf(glboalStates?.connection, Connection);
+    assert.isArray(glboalStates?.accounts);
+    assert.instanceOf(glboalStates?.accounts?.[0], Keypair);
+    assert.isFunction(glboalStates?.cleanup);
   });
 });
