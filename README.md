@@ -1,28 +1,32 @@
 # solana-test-validator-js
 
-## This documentation written for @0.1, for @0.2 rewrting is in progress 🚧
-
 Spin-up solana-test-validator instance in JavaScript, intended to be use with test framework.
 
 It also create connection instance and funded account ready to be use in test !
 
-It is recommended to use in combination with [Mocha](https://mochajs.org) ☕.
+highly recommended to use in combination with [Mocha](https://mochajs.org) ☕.
+
+## This documentation is outdated ❗
+
+Originally written for ``solana-test-validator-js@0.1``
+
+**for ``solana-test-validator-js@0.2`` rewriting is in progress 🚧**
 
 ## Requirement
 
-- solana-tool-suite
+- [solana-tool-suite](https://docs.solana.com/cli/install-solana-cli-tools)
 
 verify by running `solana-test-validator --version`
 
 ## Setup
 
-install dependencies
+Install dependencies
 
 ```sh
 $ npm i -D solana-test-validator-js @solana/web3.js
 ```
 
-in your .gitignore
+In your .gitignore
 
 ```gitignore
 test-ledger/
