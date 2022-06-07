@@ -1,7 +1,6 @@
 import {
   Connection,
   ConnectionConfig,
-  Keypair,
   LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
 import cp from "child_process";
@@ -12,7 +11,7 @@ import {
   getAccounts,
 } from "./utils";
 import { Client as rpcWebSocketClient } from "rpc-websockets";
-import { Cleanup, setConnection } from "./states";
+import { setConnection } from "./states";
 
 /**
  * default port for solana test validator
@@ -23,17 +22,29 @@ const PORT = "8899";
  */
 const SOLANA_TEST_VALIDATOR_EXECUTABLE = "solana-test-validator";
 
-interface Option {
+export interface Option {
   logging: boolean;
   exec: string;
   connectionConfig?: ConnectionConfig;
   accounts: Account;
 }
 
-interface Account {
+export interface Account {
   number: number;
   lamports: number;
 }
+
+/**
+ * @description teardown function to close all created process
+ */
+export type Cleanup = () => void;
+
+/**
+ * @description solana-test-validator arguments
+ *
+ * @see https://docs.solana.com/developing/test-validator
+ */
+export type Args = string[];
 
 const DEFAULT_OPTION: Option = {
   exec: SOLANA_TEST_VALIDATOR_EXECUTABLE,
@@ -45,6 +56,27 @@ const DEFAULT_OPTION: Option = {
   connectionConfig: undefined,
 };
 
+/**
+ * @description Spin-up solana-test-validator
+ *
+ * @param args - solana-test-validator arguments
+ * @param option - option for Initializing
+ *
+ * @returns [connection instance, cleanup function]
+ *
+ * @example
+ * start and connect with default args
+ * ```
+ * const [connection, cleanup] = await startAndConnect();
+ * ```
+ * @example
+ * connection instance can also be obtained from anywhere else by import
+ * ```
+ * import { connection } from "solana-test-validator-js"
+ * ```
+ *
+ * @see https://docs.solana.com/developing/test-validator
+ */
 async function startAndConnect(
   args: string[] = [],
   option: Option = DEFAULT_OPTION
@@ -73,7 +105,8 @@ async function startAndConnect(
     if (validator) validator.kill();
     if (solanaLogger) solanaLogger.kill();
 
-    if (option.logging) logger("Waiting for instances to gracfully close... ⛵");
+    if (option.logging)
+      logger("Waiting for instances to gracfully close... ⛵");
   };
 
   return [connection, cleanup];
@@ -84,6 +117,8 @@ async function startAndConnect(
  *
  * @param connection - Connection instance
  * @param account - Account option
+ *
+ * @internal
  */
 async function fundAccounts(connection: Connection, account: Account) {
   const accounts = getAccounts(account.number);
@@ -100,15 +135,17 @@ async function fundAccounts(connection: Connection, account: Account) {
     promises.push(promise);
   }
 
-  return Promise.all(promises);
+  await Promise.all(promises);
 }
 
 /**
- *  Create solana-test-validator instance
+ *  @description Create solana-test-validator instance
  *
  *  @param args - arguments that get passed to solana-test-validator
  *  @param logging - whether to output logging or not
  *  @param exec solana-test-validator executable
+ *
+ *  @internal
  *
  *  @returns Promise which resolve as [Connection, payer, cleanup]
  */

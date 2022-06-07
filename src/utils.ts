@@ -1,8 +1,11 @@
 import fetch from "node-fetch";
-import { Args } from "./index";
+import { Args } from "./startValidator";
 import chalk from "chalk";
 import { Keypair } from "@solana/web3.js";
 
+/**
+ * @internal
+ */
 function stringify(args: Args[]) {
   return args?.map((a) => {
     if (typeof a === "string") return a;
@@ -10,10 +13,16 @@ function stringify(args: Args[]) {
   });
 }
 
+/**
+ * @internal
+ */
 function wait(ms: number) {
   return new Promise<void>((resolve) => setTimeout(() => resolve(), ms));
 }
 
+/**
+ * @internal
+ */
 async function validateRpc(port: string | number) {
   const body = {
     jsonrpc: "2.0",
@@ -34,6 +43,9 @@ async function validateRpc(port: string | number) {
   return json?.result === "ok";
 }
 
+/**
+ * @internal
+ */
 async function waitUntilRpcAvailable(port: string | number): Promise<void> {
   while (true) {
     if (await validateRpc(port)) return;
@@ -47,6 +59,8 @@ async function waitUntilRpcAvailable(port: string | number): Promise<void> {
  * @param message - message to be logged
  *
  * @returns colorized string
+ *
+ * @internal
  */
 function logger(message: string) {
   const solana = chalk.rgb(0, 255, 163)("[solana");
@@ -62,6 +76,8 @@ function logger(message: string) {
  * Find and return port from arguments
  *
  * @returns port
+ *
+ * @internal
  */
 function getPortFromArgs(args: string[]): string | null {
   let portIndex = args.findIndex((arg) => arg === "--rpc-port");
@@ -70,7 +86,7 @@ function getPortFromArgs(args: string[]): string | null {
 }
 
 /**
- * Get array of Keypair
+ * @description Get array of Keypair
  *
  * @param total - number of accounts to be returned
  *

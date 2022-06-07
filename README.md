@@ -2,15 +2,13 @@
 
 Spin-up solana-test-validator instance in JavaScript, intended to be use with test framework.
 
-It also create connection instance and funded account ready to be use in test !
+It create connection instance and funded account ready to be use in test !
 
 highly recommended to use in combination with [Mocha](https://mochajs.org) ☕.
 
-## This documentation is outdated ❗
+## Documentation
 
-Originally written for `solana-test-validator-js@0.1`
-
-**for `solana-test-validator-js@0.2` rewriting is in progress 🚧**
+documentation for all API is generated via [TypeDoc](https://typedoc.org) at [littleboycoding.github.io/solana-test-validator-js](https://littleboycoding.github.io/solana-test-validator-js)
 
 ## Requirement
 
@@ -23,7 +21,7 @@ verify by running `solana-test-validator --version`
 Install dependencies
 
 ```sh
-$ npm i -D solana-test-validator-js @solana/web3.js
+$ npm i -D solana-test-validator-js@0.2 @solana/web3.js
 ```
 
 In your .gitignore
@@ -36,19 +34,33 @@ test-ledger/
 
 ### Mocha & TypeScript
 
+Create and connect with startAndConnect
+
+this function spawn solana-test-validator process then create connection instance
+
+additionally, it also create funded accounts with given number
+
 ```typescript
-import { Connection, Keypair } from "@solana/web3.js";
-import { startSolanaTestValidator, Cleanup } from "solana-test-validator-js";
+import { Connection, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import {
+  startAndConnect,
+  getAccounts,
+  Cleanup,
+} from "solana-test-validator-js";
 
 describe("Test", function () {
   let connection: Connection;
-  let payer: Keypair;
   let cleanup: Cleanup;
+
+  const accounts = getAccounts(1);
 
   this.timeout(60000);
 
   before(async function () {
-    [connection, [payer], cleanup] = startSolanaTestValidator();
+    [connection, cleanup] = startAndConnect([], {
+      number: 1,
+      lamports: LAMPORTS_PER_SOL * 10000,
+    });
   });
 
   after(function () {
@@ -59,19 +71,26 @@ describe("Test", function () {
 
 ### Deploy mock program
 
+`startAndConnect` accept all solana-test-validator arguments, this example use `--bpf-program` to deploy mock program !
+
 ```typescript
 import { Connection, Keypair } from "@solana/web3.js";
-import { startSolanaTestValidator, Cleanup } from "solana-test-validator-js";
+import {
+  startAndConnect,
+  Cleanup,
+  getAccounts,
+} from "solana-test-validator-js";
 
 describe("Test", function () {
   let connection: Connection;
-  let payer: Keypair;
   let cleanup: Cleanup;
+
+  const accounts = getAccounts(1);
 
   this.timeout(60000);
 
   before(async function () {
-    [connection, [payer], cleanup] = startSolanaTestValidator([
+    [connection, cleanup] = startAndConnect([
       "--bpf-program",
       PROGRAM_ADDRESS,
       "<path-to-program.so>",
@@ -80,6 +99,45 @@ describe("Test", function () {
 
   after(function () {
     cleanup();
+  });
+});
+```
+
+### Mocha global fixture
+
+Mocha's global fixture make it easy to setup test that guaranteed to run only once
+
+`fixture.ts`
+
+```typescript
+import { startAndConnect } from "solana-test-validator-js";
+
+export async function MochaGlobalSetup() {
+  const [, cleanup] = startAndConnect();
+  this.cleanup();
+}
+
+export function MochaGlobalTeardown() {
+  if (this.cleanup) this.cleanup();
+}
+```
+
+`test.ts`
+
+```typescript
+import {
+  startAndConnect,
+  getAccounts,
+  connection,
+} from "solana-test-validator-js";
+
+describe("Test", function () {
+  const accounts = getAccounts(1);
+
+  this.timeout(60000);
+
+  it("should work", async function () {
+    const account = await connection.getAccountInfo(accounts[0].publicKey);
   });
 });
 ```

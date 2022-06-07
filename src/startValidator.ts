@@ -14,7 +14,53 @@ import {
   wait,
   validateRpc,
 } from "./utils";
-import { Cleanup, setStates } from "./states";
+
+declare global {
+  /**
+   * Internally global state
+   * @internal
+   * @deprecated
+   */
+  var _solanaTestValidator: States;
+}
+
+/**
+ * variables that get updated on instance created, useful for test purpose
+ * @deprecated
+ */
+export interface States {
+  connection?: Connection;
+  accounts?: Keypair[];
+  cleanup?: Cleanup;
+}
+
+// initial states
+global._solanaTestValidator = {
+  cleanup: undefined,
+  accounts: undefined,
+  connection: undefined,
+};
+
+/**
+ * current solana-test-validator-js states getter
+ *
+ * @returns states object containing connection, accounts, cleanup
+ *
+ * @deprecated
+ */
+function states() {
+  return global._solanaTestValidator;
+}
+
+/**
+ * states setter
+ *
+ * @internal
+ * @deprecated
+ */
+function setStates(newStates: States) {
+  global._solanaTestValidator = newStates;
+}
 
 export interface Option {
   logging?: boolean;
@@ -36,6 +82,8 @@ export interface Account {
   number: number;
   lamports: number;
 }
+
+export type Cleanup = () => void;
 
 export type Args = PublicKey | string;
 
@@ -61,6 +109,7 @@ const DEFAULT_OPTION = {
  *  ```
  *  const [conncetion, payer, cleanup] = await startSolanaTestValidator(["--ledger", ".ledger", "--reset"]);
  *  ```
+ *  @deprecated
  */
 async function startSolanaTestValidator(
   args?: Args[],
@@ -157,5 +206,3 @@ async function startSolanaTestValidator(
 
   return [connection, accounts, cleanup];
 }
-
-export { startSolanaTestValidator };
