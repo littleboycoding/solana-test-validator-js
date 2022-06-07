@@ -1,6 +1,6 @@
 {
   "name": "solana-test-validator-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Spin-up solana-test-validator instance in JavaScript",
   "main": "dist/index.js",
   "scripts": {
