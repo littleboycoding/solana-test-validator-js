@@ -8,9 +8,9 @@ highly recommended to use in combination with [Mocha](https://mochajs.org) ☕.
 
 ## This documentation is outdated ❗
 
-Originally written for ``solana-test-validator-js@0.1``
+Originally written for `solana-test-validator-js@0.1`
 
-**for ``solana-test-validator-js@0.2`` rewriting is in progress 🚧**
+**for `solana-test-validator-js@0.2` rewriting is in progress 🚧**
 
 ## Requirement
 
