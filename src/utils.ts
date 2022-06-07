@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import { Args } from "./index";
 import chalk from "chalk";
+import { Keypair } from "@solana/web3.js";
 
 function stringify(args: Args[]) {
   return args?.map((a) => {
@@ -57,4 +58,45 @@ function logger(message: string) {
   console.log(name, chalk.red.bold("\n❯"), message);
 }
 
-export { stringify, wait, waitUntilRpcAvailable, validateRpc, logger };
+/**
+ * Find and return port from arguments
+ *
+ * @returns port
+ */
+function getPortFromArgs(args: string[]): string | null {
+  let portIndex = args.findIndex((arg) => arg === "--rpc-port");
+  if (portIndex === -1) return null;
+  else return args[portIndex + 1];
+}
+
+/**
+ * Get array of Keypair
+ *
+ * @param total - number of accounts to be returned
+ *
+ * @returns array of Keypair
+ */
+function getAccounts(total: number) {
+  if (total > 256) throw new Error("maximum accounts exceeded");
+
+  const accounts: Keypair[] = [];
+  const buffer = Buffer.alloc(32);
+
+  for (let i = 0; i < total; i++) {
+    const seed = Uint8Array.from(buffer);
+    seed[seed.length - 1] = i;
+    accounts.push(Keypair.fromSeed(seed));
+  }
+
+  return accounts;
+}
+
+export {
+  stringify,
+  wait,
+  waitUntilRpcAvailable,
+  validateRpc,
+  logger,
+  getPortFromArgs,
+  getAccounts,
+};

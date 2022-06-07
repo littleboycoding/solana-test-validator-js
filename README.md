@@ -1,5 +1,7 @@
 # solana-test-validator-js
 
+## This documentation is outdated, Rewrting in progress 🚧
+
 Spin-up solana-test-validator instance in JavaScript, intended to be use with test framework.
 
 It also create connection instance and funded account ready to be use in test !

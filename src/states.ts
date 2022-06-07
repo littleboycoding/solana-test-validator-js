@@ -3,7 +3,7 @@ import { Connection, Keypair } from "@solana/web3.js";
 /**
  * teardown function to close all created process
  */
-export type Cleanup = () => Promise<void>;
+export type Cleanup = () => void;
 
 declare global {
   /**
@@ -47,4 +47,17 @@ function setStates(newStates: States) {
   global._solanaTestValidator = newStates;
 }
 
-export { states, setStates };
+/**
+ * Connection, managed internally
+ */
+let connection: Connection;
+
+/**
+ * Connection instance setter, should not be use manually
+ * @internal
+ */
+function setConnection(conn: Connection) {
+  connection = conn;
+}
+
+export { states, setStates, connection, setConnection };
