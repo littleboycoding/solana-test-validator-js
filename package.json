@@ -1,6 +1,6 @@
 {
   "name": "solana-test-validator-js",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Spin-up solana-test-validator instance in JavaScript",
   "main": "dist/index.js",
   "scripts": {
@@ -9,7 +9,11 @@
     "prepare": "npm run build"
   },
   "keywords": [],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/littleboycoding/solana-test-validator-js.git"
+  },
+  "author": "Thanawat Yodnil",
   "license": "ISC",
   "dependencies": {
     "@solana/web3.js": "^1.43.2",
