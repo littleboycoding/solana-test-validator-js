@@ -21,7 +21,7 @@ verify by running `solana-test-validator --version`
 Install dependencies
 
 ```sh
-$ npm i -D solana-test-validator-js@0.2 @solana/web3.js
+$ npm i -D solana-test-validator-js @solana/web3.js
 ```
 
 In your .gitignore
