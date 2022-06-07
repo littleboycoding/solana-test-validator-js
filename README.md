@@ -1,6 +1,6 @@
 # solana-test-validator-js
 
-## This documentation is outdated, Rewrting in progress 🚧
+## This documentation written for @0.1, for @0.2 rewrting is in progress 🚧
 
 Spin-up solana-test-validator instance in JavaScript, intended to be use with test framework.
 
