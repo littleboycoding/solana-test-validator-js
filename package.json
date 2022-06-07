@@ -1,12 +1,13 @@
 {
   "name": "solana-test-validator-js",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Spin-up solana-test-validator instance in JavaScript",
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha test/*.test.ts",
     "build": "tsc",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "doc:build": "typedoc --excludeInternal ./src/index.ts"
   },
   "keywords": [],
   "repository": {
