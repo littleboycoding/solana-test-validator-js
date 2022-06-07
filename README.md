@@ -38,17 +38,22 @@ test-ledger/
 
 ```typescript
 import { Connection, Keypair } from "@solana/web3.js";
-import { startSolanaTestValidator, Cleanup } from "solana-test-validator-js";
+import {
+  startAndConnect,
+  getAccounts,
+  Cleanup,
+} from "solana-test-validator-js";
 
 describe("Test", function () {
   let connection: Connection;
-  let payer: Keypair;
   let cleanup: Cleanup;
+
+  const payer = getAccounts(1);
 
   this.timeout(60000);
 
   before(async function () {
-    [connection, [payer], cleanup] = startSolanaTestValidator();
+    [connection, cleanup] = startAndConnect();
   });
 
   after(function () {
@@ -61,17 +66,22 @@ describe("Test", function () {
 
 ```typescript
 import { Connection, Keypair } from "@solana/web3.js";
-import { startSolanaTestValidator, Cleanup } from "solana-test-validator-js";
+import {
+  startAndConnect,
+  Cleanup,
+  getAccounts,
+} from "solana-test-validator-js";
 
 describe("Test", function () {
   let connection: Connection;
-  let payer: Keypair;
   let cleanup: Cleanup;
+
+  const payer = getAccounts(1);
 
   this.timeout(60000);
 
   before(async function () {
-    [connection, [payer], cleanup] = startSolanaTestValidator([
+    [connection, [payer], cleanup] = startAndConnect([
       "--bpf-program",
       PROGRAM_ADDRESS,
       "<path-to-program.so>",
@@ -82,6 +92,50 @@ describe("Test", function () {
     cleanup();
   });
 });
+```
+
+### Mocha global fixture
+
+- fixture.ts
+
+```typescript
+import { startAndConnect } from "solana-test-validator-js";
+
+export async function mochaGlobalSetup() {
+  const [, cleanup] = startAndConnect();
+  this.cleanup = cleanup;
+}
+
+export function mochaGlobalTeardown() {
+  if (this.cleanup) this.cleanup();
+}
+```
+
+- test.ts
+
+```typescript
+import {
+  startAndConnect,
+  getAccounts,
+  connection,
+} from "solana-test-validator-js";
+
+describe("Test", function () {
+  const accounts = getAccounts(1);
+
+  this.timeout(60000);
+
+  it("should work", async function () {
+    const account = await connection.getAccountInfo(accounts[0].publicKey);
+  });
+});
+```
+
+- .mocharc.js
+```javascript
+module.exports = {
+  require: ["ts-node/register", "./fixture.ts"]
+};
 ```
 
 ## Note
